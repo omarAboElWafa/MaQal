@@ -7,6 +7,7 @@ using MaQal.Data.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,16 @@ namespace MaQal
         {
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(_config["DefaultConnection"]));
 
+            services.AddDefaultIdentity<IdentityUser>(options =>
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireUppercase= false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequiredLength = 6;
+                })
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>();
+
             services.AddTransient<IRepository, Repository>();
             
             services.AddMvc();
@@ -40,11 +51,10 @@ namespace MaQal
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseAuthentication();
+
             app.UseMvcWithDefaultRoute();
-            //app.Run(async (context) =>
-            //{
-            //    await context.Response.WriteAsync("Hello World!");
-            //});
+ 
         }
     }
 }
