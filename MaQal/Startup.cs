@@ -28,15 +28,19 @@ namespace MaQal
         {
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(_config["DefaultConnection"]));
 
-            services.AddDefaultIdentity<IdentityUser>(options =>
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
                 {
                     options.Password.RequireDigit = false;
                     options.Password.RequireUppercase= false;
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequiredLength = 6;
                 })
-                .AddRoles<IdentityRole>()
+                //.AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>();
+            services.ConfigureApplicationCookie(option =>
+            {
+                option.LoginPath = "/Auth/Login";
+            });
 
             services.AddTransient<IRepository, Repository>();
             
